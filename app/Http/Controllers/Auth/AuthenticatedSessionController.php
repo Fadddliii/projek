@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,28 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
+     * Login as a limited guest account (read-only access).
+     */
+    public function guestLogin(Request $request): RedirectResponse
+    {
+        // Cari atau buat user guest dengan role 'guest'
+        $guest = User::firstOrCreate(
+            ['username' => 'guest'],
+            [
+                'name' => 'Guest',
+                'email' => 'guest@example.com',
+                'role' => 'guest',
+                'password' => bcrypt(str()->random(32)),
+            ]
+        );
+
+        Auth::login($guest);
+        $request->session()->regenerate();
+
+        return redirect()->route('dashboard');
+    }
+
+    /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
@@ -42,6 +65,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

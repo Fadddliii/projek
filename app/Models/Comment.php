@@ -6,16 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Media extends Model
+class Comment extends Model
 {
     protected $fillable = [
         'user_id',
-        'path',
-        'original_name',
-        'thumbnail_path',
-        'type',
-        'caption',
-        'subject',
+        'media_id',
+        'body',
     ];
 
     public function user(): BelongsTo
@@ -23,13 +19,13 @@ class Media extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function likes(): HasMany
+    public function media(): BelongsTo
     {
-        return $this->hasMany(Like::class);
+        return $this->belongsTo(Media::class);
     }
 
-    public function comments(): HasMany
+    public function likes(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(CommentLike::class);
     }
 }
